@@ -13,7 +13,11 @@
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
-
+- (BOOL)bridgelessEnabled
+{
+  // If you want to disable then use below code
+  return YES;
+}
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
   return [self bundleURL];
