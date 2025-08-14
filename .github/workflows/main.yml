@@ -1,0 +1,52 @@
+name: Build React Native APK
+
+on:
+  push:
+    branches:
+      - main  # or your build branch
+  workflow_dispatch: # allows manual trigger
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # match your project's version
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install -g yarn # if using yarn
+          yarn install --frozen-lockfile
+
+      # 4. Install Java & Android SDK
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # match RN Gradle requirement
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 5. Build APK
+      - name: Build release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+
+      # 6. Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
